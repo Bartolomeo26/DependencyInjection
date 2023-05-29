@@ -17,7 +17,6 @@ namespace AplikacjaLataPrzestepne.Pages
     {
         public IEnumerable<RokPrzestepny> LeapYearList;
         private readonly ILogger<IndexModel> _logger;
-        private readonly Wyszukiwania _context;
         private readonly IConfiguration Configuration;
         private readonly RokPrzestepnyInterface _rokService;
         private readonly IHttpContextAccessor _contextAccessor;
@@ -25,7 +24,6 @@ namespace AplikacjaLataPrzestepne.Pages
         public ListModel(ILogger<IndexModel> logger, IConfiguration configuration, IHttpContextAccessor contextAccessor, Wyszukiwania context, RokPrzestepnyInterface rokService)
         {
             _logger = logger;
-            _context = context;
             Configuration = configuration;
             _contextAccessor = contextAccessor;
             _rokService = rokService;
@@ -48,7 +46,7 @@ namespace AplikacjaLataPrzestepne.Pages
             CurrentSort = sortOrder;
             NameSort = String.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
             DateSort = sortOrder == "Date" ? "date_desc" : "Date";
-            var lata = await _rokService.GetAllPeopleAsync();
+            var lata = await _rokService.GetAllRokAsync();
             switch (sortOrder)
             {
                 case "Date":
@@ -78,11 +76,8 @@ namespace AplikacjaLataPrzestepne.Pages
         }
         public IActionResult OnPost(int id_User)
         {
-            obiekt_doSzukania = _context.LeapData.Find(id_User);
-
-            obiekt_doSzukania.Id = id_User;
-            _context.LeapData.Remove(obiekt_doSzukania);
-            _context.SaveChanges();
+            _rokService.DeleteRokAsync(id_User, obiekt_doSzukania);
+           
             return RedirectToAction("Async");
         }
     }

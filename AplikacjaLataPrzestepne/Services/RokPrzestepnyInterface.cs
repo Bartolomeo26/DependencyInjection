@@ -7,11 +7,11 @@ namespace AplikacjaLataPrzestepne.Services
     public interface RokPrzestepnyInterface
     {
         
-            Task<List<RokPrzestepny>> GetAllPeopleAsync();
-            Task<RokPrzestepny> GetPersonByIdAsync(int id);
-            Task CreatePersonAsync(RokPrzestepny rok);
-            Task UpdatePersonAsync(RokPrzestepny rok);
-            Task DeletePersonAsync(int id);
+            Task<List<RokPrzestepny>> GetAllRokAsync();
+            Task<RokPrzestepny> GetRokByIdAsync(int id);
+            Task CreateRokAsync(RokPrzestepny rok);
+            Task UpdateRokAsync(RokPrzestepny rok);
+            Task DeleteRokAsync(int id, RokPrzestepny r);
        
     }
 }

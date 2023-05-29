@@ -16,31 +16,31 @@ namespace AplikacjaLataPrzestepne.Services
             _context = context;
         }
 
-        public async Task<List<RokPrzestepny>> GetAllPeopleAsync()
+        public async Task<List<RokPrzestepny>> GetAllRokAsync()
         {
             return await _context.LeapData.ToListAsync();
         }
 
-        public async Task<RokPrzestepny> GetPersonByIdAsync(int id)
+        public async Task<RokPrzestepny> GetRokByIdAsync(int id)
         {
             return await _context.LeapData.FindAsync(id);
         }
 
-        public async Task CreatePersonAsync(RokPrzestepny rok)
+        public async Task CreateRokAsync(RokPrzestepny rok)
         {
             _context.LeapData.Add(rok);
             await _context.SaveChangesAsync();
         }
 
-        public async Task UpdatePersonAsync(RokPrzestepny rok)
+        public async Task UpdateRokAsync(RokPrzestepny rok)
         {
             _context.LeapData.Update(rok);
             await _context.SaveChangesAsync();
         }
 
-        public async Task DeletePersonAsync(int id)
+        public async Task DeleteRokAsync(int id, RokPrzestepny r)
         {
-            var r = await _context.LeapData.FindAsync(id);
+            r = _context.LeapData.Find(id);
             
             _context.LeapData.Remove(r);
                 await _context.SaveChangesAsync();
