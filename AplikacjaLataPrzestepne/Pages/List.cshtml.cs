@@ -70,7 +70,7 @@ namespace AplikacjaLataPrzestepne.Pages
 
             
             var lataQueryable = lata.AsQueryable();
-            var pageSize = Configuration.GetValue("PageSize", 4);
+            var pageSize = Configuration.GetValue("PageSize", 20);
             LataPrzestepne = await PaginatedList<RokPrzestepny>.CreateAsync(lata, pageIndex ?? 1, pageSize);
             
         }
