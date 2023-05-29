@@ -1,10 +1,14 @@
 using AplikacjaLataPrzestepne.Data;
 using AplikacjaLataPrzestepne.Forms;
 using ListLeapYears;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using AplikacjaLataPrzestepne.Services;
 using System.Configuration;
 
 namespace AplikacjaLataPrzestepne.Pages
@@ -13,16 +17,18 @@ namespace AplikacjaLataPrzestepne.Pages
     {
         public IEnumerable<RokPrzestepny> LeapYearList;
         private readonly ILogger<IndexModel> _logger;
-        private readonly IConfiguration Configuration;
         private readonly Wyszukiwania _context;
+        private readonly IConfiguration Configuration;
+        private readonly RokPrzestepnyInterface _rokService;
         private readonly IHttpContextAccessor _contextAccessor;
 
-        public ListModel(ILogger<IndexModel> logger, Wyszukiwania context, IConfiguration configuration, IHttpContextAccessor contextAccessor)
+        public ListModel(ILogger<IndexModel> logger, IConfiguration configuration, IHttpContextAccessor contextAccessor, Wyszukiwania context, RokPrzestepnyInterface rokService)
         {
             _logger = logger;
             _context = context;
             Configuration = configuration;
             _contextAccessor = contextAccessor;
+            _rokService = rokService;
         }
         public RokPrzestepny obiekt_doSzukania { get; set; } = new RokPrzestepny();
         public string NameSort { get; set; }
@@ -41,7 +47,20 @@ namespace AplikacjaLataPrzestepne.Pages
             }
             CurrentSort = sortOrder;
             NameSort = String.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
-            DateSort = sortOrder == "Date" ? "date_asc" : "Date";
+            DateSort = sortOrder == "Date" ? "date_desc" : "Date";
+            var lata = await _rokService.GetAllPeopleAsync();
+            switch (sortOrder)
+            {
+                case "Date":
+                    lata = lata.OrderBy(s => s.Data).ToList();
+                    break;
+                case "date_desc":
+                    lata = lata.OrderByDescending(s => s.Data).ToList();
+                    break;
+                default:
+                    lata = lata.OrderByDescending(s => s.Data).ToList();
+                    break;
+            }
             if (searchString != null)
             {
                 pageIndex = 1;
@@ -50,21 +69,20 @@ namespace AplikacjaLataPrzestepne.Pages
             {
                 searchString = currentFilter;
             }
-             
-            IQueryable<RokPrzestepny> uzytkownicy = from s in _context.LeapData.OrderByDescending(x=>x.Data) select s;
+
             
-            var pageSize = Configuration.GetValue("PageSize", 20);
-            LataPrzestepne = await PaginatedList<RokPrzestepny>.CreateAsync(
-                uzytkownicy.AsNoTracking(), pageIndex ?? 1, pageSize);
+            var lataQueryable = lata.AsQueryable();
+            var pageSize = Configuration.GetValue("PageSize", 4);
+            LataPrzestepne = await PaginatedList<RokPrzestepny>.CreateAsync(lata, pageIndex ?? 1, pageSize);
+            
         }
         public IActionResult OnPost(int id_User)
-        {    
+        {
             obiekt_doSzukania = _context.LeapData.Find(id_User);
-            
+
             obiekt_doSzukania.Id = id_User;
             _context.LeapData.Remove(obiekt_doSzukania);
             _context.SaveChanges();
-            
             return RedirectToAction("Async");
         }
     }

@@ -69,6 +69,7 @@
                 </td>
                 </form>
                }
+                
             </tr>
         }
     </tbody>
@@ -78,7 +79,7 @@
     var prevDisabled = !Model.LataPrzestepne.HasPreviousPage ? "disabled" : "";
     var nextDisabled = !Model.LataPrzestepne.HasNextPage ? "disabled" : "";
 }
-
+<p>@ViewData["message"]</p>
 <a asp-page="./List"
    asp-route-sortOrder="@Model.CurrentSort"
    asp-route-pageIndex="@(Model.LataPrzestepne.PageIndex - 1)"
